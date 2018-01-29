@@ -1,0 +1,117 @@
+% !TEX program = xelatex
+\documentclass[12pt, a4paper]{extreport}
+
+\usepackage[T1]{fontenc}
+\usepackage[croatian]{babel}
+\usepackage{geometry}
+\usepackage{marginnote}
+\usepackage{sepfootnotes}
+\usepackage{fontspec}
+% \usepackage[none]{hyphenat}
+\usepackage{afterpage}
+\usepackage{color}
+
+
+
+% Linkovi
+%-------------------------------------------------------------
+\usepackage{hyperref}
+
+\hypersetup{linktoc=all}
+
+%-------------------------------------------------------------
+
+
+% Kôd
+%-------------------------------------------------------------
+\usepackage{minted}
+
+% \loadcode{language}{caption}{label}{filepath}
+\newcommand{\loadcode}[4]{
+    \renewcommand\theFancyVerbLine{\normalsize\arabic{FancyVerbLine}}
+    \begin{listing}[H]
+       \inputminted[fontsize=\small,linenos,breaklines,frame=single,style=manni]{#1}{#4}
+       \caption{#2}
+       \label{#3}
+    \end{listing} 
+}
+
+\newcommand\foreign[2]{(#1. \emph{#2})}
+%-------------------------------------------------------------
+
+
+% Tipografija
+%-------------------------------------------------------------
+\usepackage{titling}
+\usepackage{titlesec}
+
+\setsansfont{Arial}
+\setmonofont{Courier New}
+\setromanfont{Times New Roman}
+
+\setlength{\parskip}{1.5em}
+\setlength{\parindent}{0em}
+\renewcommand{\baselinestretch}{1.1}
+%-------------------------------------------------------------
+
+
+% Meta podaci dokumenta
+%-------------------------------------------------------------
+\title{Primjena optimizacijskih algoritama i strojnog učenja u kontekstu funkcijskog programskog jezika Haskell}
+
+\author{Luka Hadžiegrić}
+
+\date{Zagreb, Veljača 2018}
+%-------------------------------------------------------------
+
+% Reference
+%-------------------------------------------------------------
+\usepackage[backend=biber]{biblatex}
+\usepackage{csquotes}
+\addbibresource{paper.bib}
+%-------------------------------------------------------------
+
+
+% Glavni dokument
+%-------------------------------------------------------------
+\begin{document}
+
+    % Onemogući paginaciju
+    \pagenumbering{gobble}
+
+    % Stvori naslovnicu
+    \maketitle
+
+    \emph{``Pod punom odgovornošću pisano potvrđujem da je ovo moj autorski rad čiji niti jedan dio nije nastao kopiranjem ili plagiranjem tuđeg sadržaja. Prilikom izrade rada koristio sam tuđe materijale navedene u popisu literature, ali nisam kopirao niti jedan njihov dio, osim citata za koje sam naveo autora i izvor, te ih jasno označio znakovima navodnika. U slučaju da se u bilo kojem trenutku dokaže suprotno, spreman sam snositi sve posljedice uključivo i poništenje javne isprave stečene dijelom i na temelju ovoga rada.''}
+
+    \begin{flushright}
+    \emph{U Zagrebu, 20.2.2018}
+    \end{flushright}
+
+    \include{chapters/Predgovor}
+
+    %-------------------------------------------------------------
+    \afterpage{\null\newpage}
+    % Prilikom uvezivanja rada, Umjesto ove stranice ne zaboravite umetnuti original potvrde o prihvaćanju teme završnog rada kojeg ste preuzeli u studentskoj referadi
+    %-------------------------------------------------------------
+
+    \include{chapters/Sazetak}
+
+    \tableofcontents
+    \pagebreak
+
+    % Nastavi paginaciju
+    %-------------------------------------------------------------
+    \setcounter{page}{1}
+    \pagenumbering{arabic}
+    %-------------------------------------------------------------
+
+    \include{chapters/01_Uvod}
+
+    \pagebreak
+
+    \nocite{*}
+    \printbibliography
+
+\end{document}
+%-------------------------------------------------------------
