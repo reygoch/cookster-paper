@@ -6,10 +6,14 @@
 \usepackage{geometry}
 \usepackage{marginnote}
 \usepackage{sepfootnotes}
+\usepackage{graphicx}
 \usepackage{fontspec}
 % \usepackage[none]{hyphenat}
 \usepackage{afterpage}
 \usepackage{color}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage[acronym]{glossaries}
 
 
 
@@ -49,7 +53,7 @@
 \setmonofont{Courier New}
 \setromanfont{Times New Roman}
 
-\setlength{\parskip}{1.5em}
+\setlength{\parskip}{1.3em}
 \setlength{\parindent}{0em}
 \renewcommand{\baselinestretch}{1.1}
 %-------------------------------------------------------------
@@ -71,10 +75,13 @@
 \addbibresource{paper.bib}
 %-------------------------------------------------------------
 
-
 % Glavni dokument
 %-------------------------------------------------------------
 \begin{document}
+    % Images
+    %-------------------------------------------------------------
+    \graphicspath{ {images/} }
+    %-------------------------------------------------------------
 
     % Onemogući paginaciju
     \pagenumbering{gobble}
@@ -107,6 +114,7 @@
     %-------------------------------------------------------------
 
     \include{chapters/01_Uvod}
+    \include{chapters/02_Haskell}
 
     \pagebreak
 

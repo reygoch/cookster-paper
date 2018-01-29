@@ -1,0 +1,24 @@
+\chapter{Haskell}
+
+\begin{wrapfigure}[7]{l}{0.25\textwidth}
+    \centering
+    \includegraphics[width=0.25\textwidth]{haskell_logo}
+    \caption{Haskell logo}
+    \label{lbl:haskell_logo}
+\end{wrapfigure}
+
+Haskell je standardiziran, generalni, lijen i čist funkcijski programski jezik sa ne striktnom semantikom i jakim statičkim tipskim sustavom\cite{haskell_history}.
+
+Nazvan je po logičaru Haskellu Curryu i nastao je 1990. godine kao standard kojeg je definirao odbor sa idejom da se ujedine tadašnji postojeći funkcijski jezici u zajedničku cjelinu koja bi služila kao baza za daljnja istraživanja.
+
+\section{Glavne značajke}
+
+\subsection{Lijenost}
+
+Lijenost je svojstvo jezika koje znači da se izraz ne evaluira sve dok se ne zatraži njegova vrijednost iz nekog drugog izraza koji se trenutno izvršava. Ovakva odlika nam omogućava da radimo sa beskonačno velikim listama podataka, rekurzijama bez kraja i sl.\cite{lazy_vs_nonstrict}
+
+\subsection{Ne striktna semantika}
+
+Ovo svojstvo dobro komplementira lijenost te govori da se izrazi reduciraju izvana prema unutra. Kod strogih jezika redukcija se obično vrši iz nutra prema van tako da ukoliko imamo, recimo par vrijednosti \foreign{eng}{touple} koji želimo proslijediti nekoj funkciji i jedna vrijednost je npr. beskonačna lista, kod strogih jezika takav izraz će upasti u beskonačnu petlju jer će pokušati izvršiti beskonačnu listu. Haskell zbog ovog svojstva ima puno veće mogućnosti pri baratanju sa takvim apstraktnim strukturama.\cite{lazy_vs_nonstrict}
+
+\subsection{Čistoća i referencijalna transparentnost}
