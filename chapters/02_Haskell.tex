@@ -19,6 +19,12 @@ Lijenost je svojstvo jezika koje znači da se izraz ne evaluira sve dok se ne za
 
 \subsection{Ne striktna semantika}
 
-Ovo svojstvo dobro komplementira lijenost te govori da se izrazi reduciraju izvana prema unutra. Kod strogih jezika redukcija se obično vrši iz nutra prema van tako da ukoliko imamo, recimo par vrijednosti \foreign{eng}{touple} koji želimo proslijediti nekoj funkciji i jedna vrijednost je npr. beskonačna lista, kod strogih jezika takav izraz će upasti u beskonačnu petlju jer će pokušati izvršiti beskonačnu listu. Haskell zbog ovog svojstva ima puno veće mogućnosti pri baratanju sa takvim apstraktnim strukturama.\cite{lazy_vs_nonstrict}
+Ovo svojstvo dobro komplementira lijenost te govori da se izrazi reduciraju izvana prema unutra. Kod strogih jezika redukcija se obično vrši iznutra prema van tako da ukoliko imamo, recimo par vrijednosti \foreign{eng}{touple} koji želimo proslijediti nekoj funkciji i jedna vrijednost je npr. beskonačna lista, kod strogih jezika takav izraz će upasti u beskonačnu petlju jer će pokušati izvršiti beskonačnu listu. Haskell zbog ovog svojstva ima puno veće mogućnosti pri baratanju sa takvim apstraktnim strukturama.\cite{lazy_vs_nonstrict}
 
-\subsection{Čistoća i referencijalna transparentnost}
+\subsection{Čistoća}
+
+Većina jezika omogućava da funkcije osim što vraćaju neku vrijednost izvrše i neke akcije poput pisanja na disk ili u bazu. U čistim programskim jezicima takve akcije zovemo sporedni efekti \foreign{eng}{side effects} kako bi se naglasilo da je povratna vrijednost najvažniji dio ishoda funkcije.\cite{fp_purity}
+
+\subsubsection{Referencijalna transparentnost}
+
+Čisti izračuni 
