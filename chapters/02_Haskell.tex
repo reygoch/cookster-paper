@@ -1,30 +1,152 @@
 \chapter{Haskell}
 
-\begin{wrapfigure}[7]{l}{0.25\textwidth}
+\begin{wrapfigure}[8]{l}{0.25\textwidth}
     \centering
     \includegraphics[width=0.25\textwidth]{haskell_logo}
     \caption{Haskell logo}
     \label{lbl:haskell_logo}
 \end{wrapfigure}
 
-Haskell je standardiziran, generalni, lijen i čist funkcijski programski jezik sa ne striktnom semantikom i jakim statičkim tipskim sustavom\cite{haskell_history}.
+Haskell je čisto funkcijski programski jezik te ima sve odlike koje se mogu pronaći kod takvih jezika, kao što su čistoća \foreign{eng}{purity}, lijenost \foreign{eng}{lazyness}, referencijalna transparentnost \foreign{eng}{referential trnsparency}, funkcije višeg reda \foreign{eng}{higher order functions}, nepromjenjive podatke \foreign{immutable data}, ne striktnu semantiku \foreign{eng}{nonstrict semantics}, sporedne efekte \foreign{eng}{side effects} i još mnoge druge.\cite{haskellorg}
 
-Nazvan je po logičaru Haskellu Curryu i nastao je 1990. godine kao standard kojeg je definirao odbor sa idejom da se ujedine tadašnji postojeći funkcijski jezici u zajedničku cjelinu koja bi služila kao baza za daljnja istraživanja.
+Sve to čini Haskell vrlo moćnim i ekspresivnim programskim jezikom koji omogućava da jasno i jednostavno izrazimo koncepte koji nisu lako izvedivi u klasičnim imperativnim jezicima.
 
-\section{Glavne značajke}
+Lijenost i ne striktna semantika nam omogućavaju da jednostavno baratamo sa vrlo apstraktnim podacima kao što su beskonačne liste ili \textit{bottom} vrijednosti. Čistoća, referencijalna transparentnost i nepromjenjivost podataka osigurava lako razumijevanje koda te njegovo konzistentno ponašanje dok nam funkcije višeg reda daju višestruku iskoristivost i kompozitnost koda \foreign{eng}{code reusability}.
 
-\subsection{Lijenost}
+Čistoća je važno svojstvo Haskella a svodi se na to da funkcija uvijek vraća vrijednost i ne može imati nikakve sporedne efekte, kao recimo mijenjanje globalnog stanja. Ovo je vrlo bitno jer olakšava mnogo stvari kao što je na primjer konkurentnost koda gdje možemo biti sigurni da dva odvojena procesa neće pokušati pisati u istu varijablu.
 
-Lijenost je svojstvo jezika koje znači da se izraz ne evaluira sve dok se ne zatraži njegova vrijednost iz nekog drugog izraza koji se trenutno izvršava. Ovakva odlika nam omogućava da radimo sa beskonačno velikim listama podataka, rekurzijama bez kraja i sl.\cite{lazy_vs_nonstrict}
+Ipak, ponekad želimo imati sporedne efekte u našim funkcijama (takozvani prljavi ili efektni kod). Želimo da naša funkcija, osim što vraća vrijednost piše i u bazu podataka, ili lansira nuklearne rakete. U Haskellu je i takav kod u principu čist jer se izvodi preko monadskog sučelja kroz koje su takve akcije \textit{eksplicitno} definirane te se iz samog potpisa funkcije vidi da li ona izvodi nekakvu potencijalno ``prljavu'' operaciju, stanje se npr. eksplicitno definira i provlači kroz daljnje funkcije skriveno iza monadskog sučelja koje nam daje ``imperativni'' osjećaj uz garanciju čistoće.\cite{fp_purity}
 
-\subsection{Ne striktna semantika}
+\section{Osnovni koncepti}
 
-Ovo svojstvo dobro komplementira lijenost te govori da se izrazi reduciraju izvana prema unutra. Kod strogih jezika redukcija se obično vrši iznutra prema van tako da ukoliko imamo, recimo par vrijednosti \foreign{eng}{touple} koji želimo proslijediti nekoj funkciji i jedna vrijednost je npr. beskonačna lista, kod strogih jezika takav izraz će upasti u beskonačnu petlju jer će pokušati izvršiti beskonačnu listu. Haskell zbog ovog svojstva ima puno veće mogućnosti pri baratanju sa takvim apstraktnim strukturama.\cite{lazy_vs_nonstrict}
+Pošto se funkcijski stil u mnogočemu razlikuje od imperativnog stila programiranja, bitno je upoznati se sa osnovnim konceptima kako bi ostatak rada bio razumljiv. Monade su već bile spomenute ali uz njih još postoje i transformatori monada \foreign{eng}{monad transformers}, aplikativni funktor \foreign{eng}{applicative functor}, funktor \foreign{eng}{functor}, monoid \foreign{eng}{monoid}, polugrupa \foreign{semigroup}, klase tipova \foreign{eng}{type class}, algebarski podatkovni tipovi \foreign{eng}{algebraic data types} i drugo.
 
-\subsection{Čistoća}
+\subsection{Funkcije}
 
-Većina jezika omogućava da funkcije osim što vraćaju neku vrijednost izvrše i neke akcije poput pisanja na disk ili u bazu. U čistim programskim jezicima takve akcije zovemo sporedni efekti \foreign{eng}{side effects} kako bi se naglasilo da je povratna vrijednost najvažniji dio ishoda funkcije.\cite{fp_purity}
+Funkcije su osnovni gradivni elementi u Haskellu te se ponašaju kao i sve druge vrijednosti. Pogledajmo primjer definicije funkcije koja prima dva slova (\texttt{Char}), pretvara ih u brojčanu reprezentaciju te vraća zbroj:
 
-\subsubsection{Referencijalna transparentnost}
+\loadcode{haskell}{Definicija funkcije}{definicija_funkcije}{code/function_definition.hs}
 
-Čisti izračuni 
+Prva linija je tipski potpis \foreign{eng}{type signature} funkcije koji nam govori koje tipove podataka funkcija prima i koji tip podatka vraća. Na drugoj liniji je implementacija te funkcije. Kao što se može primijetiti kod funkcije \texttt{ord} čiji je tipski potpis \texttt{ord :: Char -> Int}, kod primjene funkcije se ne koriste zagrade.
+
+Ovakav način primjene funkcije je koristan zbog koncepta zvan \textit{currying} koji u Haskellu znači da funkcija uvijek prima samo jedan argument. Funkcije koje izgledaju kao da primaju više argumenata zapravo primaju samo jedan argument te kao rezultat vraćaju novu funkciju koja opet očekuje idući argument. To se zove djelomična primjena \foreign{eng}{partial application} te je vrlo korisna za brzu izradu novih prilagođenih funkcija. Kada bi dali samo jedan argument našoj funkciji \texttt{f} npr. \texttt{f 3} dobili bi novu funkciju čiji bi potpis bio \texttt{Char -> Int} a neka zamišljena implementacija bi bila \texttt{f' b = ord 3 + ord b}.
+
+\subsection{Algebarski podatkovni tipovi}
+
+Algebarski podatkovni tip je vrsta kompozitnog tipa podatka. Dvije uobičajene varijante su produktni tip \foreign{eng}{product type} i sumarni tip \foreign{eng}{sum type}. Pogledajmo primjer definicije jednostavne ulančane liste:
+
+\loadcode{haskell}{Definicija ulančane liste}{definicija_liste}{code/list_definition.hs}
+
+\texttt{List} je konstruktor tipova \foreign{eng}{type constructor} sa tipskom varijablom \texttt{a} \foreign{eng}{type variable} te se može koristiti samo u potpisu funkcije. Da bi postao konkretni tip moramo mu dati konkretnu vrijednost na mjesto \texttt{a}, npr. \texttt{Int}. Iz tog razloga se smatra i funkcijom tipske razine \foreign{eng}{type level function}.
+
+U svojoj definiciji \texttt{List} daje dva podatkovna konstruktora \texttt{Nil} i \texttt{Cons a (List a)}. \texttt{Cons} se može smatrati funkcijom sa potpisom \texttt{a -> List a -> List a}. Kao što možemo primijetiti iz primjera, definicija tipa može biti rekurzivna.
+
+Pogledajmo primjer izrade liste cijelih brojeva:
+
+\loadcode{haskell}{Deklaracija liste brojeva}{deklaracija_liste}{code/int_list_declaration.hs}
+
+Vrlo praktična značajka jezika je infix notacija koja nam omogućava da prvi argument funkcije damo prije samog imena funkcije tako da ga okružimo sa znakom ``\texttt{\textasciigrave}''.
+
+\subsection{Klase tipova}
+
+Klase tipova su slične sučeljima \foreign{eng}{interfaces} iz objektno orijentiranih jezika a imaju i elemente klasa. Glavna razlika je da se definiraju odvojeno od podatkovnog tipa što pruža daleko veću fleksibilnost.
+
+Pogledajmo primjer definicije tipske klase \texttt{FooBar} koja definira dvije ``metode'' \texttt{bar} i \texttt{foo} te instancu te klase za \texttt{Int} podatkovni tip:
+
+\loadcode{haskell}{Deklaracija i instanca tipske klase}{tipska_klasa}{code/type_class.hs}
+
+U ovom slučaju klasa \texttt{FooBar} zahtijeva da tip \texttt{a} nad kojim se definira sučelje ima prethodno implementiranu klasu \texttt{Num} jer se koriste operacije zbrajanja i oduzimanja koje su definirane u toj klasi. Također, bitno je primijetiti razliku između tipske varijable \texttt{a} i argumenta funkcije \texttt{a}.
+
+\subsection{Teorija kategorija}
+
+Velik dio koncepata u Haskellu proizlazi iz teorije kategorija \foreign{eng}{category theory} tako da je bitno razumjeti neke osnovne pojmove kao što su \textit{polugrupa}, \textit{monoid}, \textit{funktor}, \textit{aplikativ}, \textit{monada} i \textit{transformator monade}.
+
+\subsubsection{Polugrupa}
+
+Polugrupa je svaki tip podatka nad kojim se može implementirati klasa \texttt{Semigroup} koja ima slijedeću definiciju:
+
+\loadcode{haskell}{Definicija polugrupe}{semigroup}{code/semigroup.hs}
+
+Klasa definira još neke funkcije ali izdvojen je samo operator \texttt{<>} (funkcije koje u nazivu sadrže samo znakove automatski postaju infix operatori). Polugrupa je u principu samo sučelje koje definira binarnu operaciju.
+
+\subsubsection*{Zakoni}
+
+Većina osnovnih klasa mora zadovoljavati određena pravila. Ta pravila nam govore puno o svojstvima koja imaju članovi te klase i omogućavaju nam donošenje dodatnih zaključaka o ponašanju našeg koda. Polugrupa konkretno mora zadovoljavati samo jedan zakon. Zakon asocijativnosti.
+
+\begin{code}{Zakoni polugrupe}{semigroup_laws}
+    (x <> y) <> z = x <> (y <> z)
+\end{code}
+
+Jedan primjer gdje nam je ovaj zakon koristan je kad imamo listu podataka koji spadaju u polugrupu te želimo provesti neku binarnu operaciju nad njima. Budući da znamo da zadovoljavaju svojstvo asocijativnosti onda sa sigurnošću znamo da možemo rascijepati tu listu na dijelove i paralelizirati tu operaciju bez opasnosti od grešaka.
+
+\subsubsection{Monoid}
+
+Monoid je ``nastavak'' na polugrupu te samo dodaje \textit{neutralan} element u definiciju.
+
+\loadcode{haskell}{Definicija monoida}{monoid}{code/monoid.hs}
+
+\subsubsection*{Zakoni}
+
+\begin{code}{Zakoni monoida}{monoid_laws}
+    mempty <> x = x\\
+    x <> mempty = x\\
+    (x <> y) <> z = x <> (y <> z)
+\end{code}
+
+\subsubsection{Funktor}
+
+Funktor klasa definira operaciju mapiranja na neki podatkovni tip, odnosno omogućava nam da primijenimo neku operaciju na sadržaj neke strukture koja implementira ovu klasu.
+
+\loadcode{haskell}{Definicija funktora}{functor}{code/functor.hs}
+
+\subsubsection*{Zakoni}
+
+\begin{code}{Zakoni funktora}{functor_laws}
+    fmap id = id\\
+    fmap (g . h) = fmap g . fmap h
+\end{code}
+
+\subsubsection{Aplikativni funktor}
+
+Aplikativ leži između monade i funktora te nam služi da primijenimo funkciju koja se nalazi unutar neke strukture na sadržaj neke druge strukture istog tipa.
+
+\loadcode{haskell}{Definicija aplikativa}{applicative}{code/applicative.hs}
+
+Kao što vidimo, aplikativ je ovisan o funktoru i definira dvije ključne funkcije. \texttt{pure} nam omogućava da \textit{omotamo} vrijednost u strukturu, dok nam \texttt{<*>} daje sposobnost da primijenimo funkciju iz jedne strukture na sadržaj druge istog tipa.
+
+\subsubsection*{Zakoni}
+
+\begin{code}{Zakoni aplikativa}{applicative_laws}
+    pure id <*> v = v\\
+    pure f <*> pure x = pure (f x)\\
+    u <*> pure y = pure (\$ y) <*> u\\
+    u <*> (v <*> w) = pure (.) <*> u <*> v <*> w
+\end{code}
+
+\subsubsection{Monada}
+
+Monade imaju specijalno mijesto u Haskellu, čak postoji i sintaktički šećer \foreign{eng}{syntactic shugar} ugrađen u sam jezik (takozvana \textit{do} sintaksa) koji nam omogućava da pišemo kod u imperativnom stilu a u pozadini zapravo koristi monadsko sučelje. U principu, monade su sučelje za povezivanje sekvencijalnih akcija.
+
+\loadcode{haskell}{Definicija monade}{monad}{code/monad.hs}
+
+\subsubsection*{Zakoni}
+
+\begin{code}{Zakoni monade}{monad_laws}
+    pure a >>= k = k a\\
+    m >>= pure = m\\
+    m >>= (\textbackslash x -> k x >>= h) = (m >>= k) >>= h
+\end{code}
+
+\subsubsection{Transformatori monada}
+
+Transformatori monada su vrlo samo opisni. Oni nam omogućuju da ``prevedemo'' jednu monadu u drugu.
+
+\loadcode{haskell}{Definicija transformatora monade}{monad_transformer}{code/transformer.hs}
+
+\subsubsection*{Zakoni}
+
+\begin{code}{Zakoni transformatora monada}{monad_transformer_laws}
+    lift . pure = pure\\
+    lift (m >>= f) = lift m >>= (lift . f)
+\end{code}
+

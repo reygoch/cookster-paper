@@ -15,8 +15,6 @@
 \usepackage{wrapfig}
 \usepackage[acronym]{glossaries}
 
-
-
 % Linkovi
 %-------------------------------------------------------------
 \usepackage{hyperref}
@@ -29,16 +27,32 @@
 % Kôd
 %-------------------------------------------------------------
 \usepackage{minted}
+\usepackage{tcolorbox}
 
 % \loadcode{language}{caption}{label}{filepath}
 \newcommand{\loadcode}[4]{
     \renewcommand\theFancyVerbLine{\normalsize\arabic{FancyVerbLine}}
     \begin{listing}[H]
-       \inputminted[fontsize=\small,linenos,breaklines,frame=single,style=manni]{#1}{#4}
-       \caption{#2}
-       \label{#3}
-    \end{listing} 
+        \begin{tcolorbox}[boxsep=1pt,left=25pt,right=5pt,top=5pt,bottom=5pt,colback=white]
+            \inputminted[fontsize=\small,linenos,breaklines,style=manni]{#1}{#4}
+        \end{tcolorbox}
+        \caption{#2}
+        \label{#3}
+    \end{listing}
 }
+
+\newenvironment{code}[2]
+    {
+    \begin{listing}[H]
+    \caption{#1}
+    \label{#2}
+    \begin{tcolorbox}[boxsep=1pt,left=5pt,right=5pt,top=5pt,bottom=5pt,colback=white]
+    \centering\small\ttfamily
+    }
+    {
+    \end{tcolorbox}
+    \end{listing}
+    }
 
 \newcommand\foreign[2]{(#1. \emph{#2})}
 %-------------------------------------------------------------
@@ -56,6 +70,9 @@
 \setlength{\parskip}{1.3em}
 \setlength{\parindent}{0em}
 \renewcommand{\baselinestretch}{1.1}
+
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
 %-------------------------------------------------------------
 
 
