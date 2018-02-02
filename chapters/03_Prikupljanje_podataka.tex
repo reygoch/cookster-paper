@@ -1,0 +1,29 @@
+\chapter{Prikupljanje podataka}
+
+Pošto nigdje na Internetu ne postoji baza recepata i sastojaka u formatu koji bi odgovarao zamišljenoj arhitekturi aplikacije, potrebno je prikupiti i obraditi informacije o sastojcima za recepte.
+
+Aplikacija mora imati bazu sastojaka, kao i njihove približne cijene i jedinice mjere u kojima se prodaju. Sve je to potrebno kako bi se mogla provesti optimizacija tjednog jelovnika prema iskoristivosti sastojaka.
+
+U tu svrhu koriste se dva izvora podataka, Coolinarka i konzumova Internet trgovina.
+
+\section{Coolinarka}
+
+Sa Coolinarke su preuzeti nazivi, opisi i slike sastojaka. Za to je bilo potrebno napraviti strugač stranice \foreign{eng}{web scraper} kako bi se iz \acs{html} koda stranice izvukle potrebne informacije.
+
+U tu svrhu korištena je programska zbirka \foreign{eng}{library} \texttt{scalpel-core} koja pruža monadsko sučelje za jednostavno definiranje strugača.
+
+Pošto sve informacije nisu dostupne na jednoj stranici, već je sadržaj raspodijeljen kroz niz podstranica, bilo je potrebno izvući veze \foreign{eng}{links} na podstranice sa detaljima sastojaka iz stranice sa popisom sastojaka.
+
+\loadcode{haskell}{Strugač veza sastojaka}{ingredient_url_scraper}{code/ingredient_url_scraper.hs}
+
+Iz potpisa strugača može se vidjeti da radi na tekstu i vraća listu \texttt{\acs{url}}ova. Pošto su veze u \acs{html}u relativne (npr. \texttt{/namirnica/curry}) na njih se dodaje kao prefiks korijenska \foreign{eng}{root} adresa stranice koja je definirana kao \texttt{coolinarka}. Također je korištena funkcija \texttt{importURL :: String -> Maybe URL} iz programse zbirke \texttt{url} koja provjerava da li je dan ispravan \acs{url}, te putem \texttt{Maybe} podatkovnog tipa jasno indicira potencijalni neuspjeh.
+
+Primjenom strugača na \acs{html} dobivamo popis \acs{url}ova za svaki od dostupnih sastojaka. Slijedeči korak je preuzeti \acs{html} sa svakog od dobivenih \acs{url}ova i primijeniti strugač sastojaka. Za tu svrhu definiran je novi algebarski tip podatka čija implementacija glasi:
+
+\loadcode{haskell}{CoolIngredient definicija}{coolingredient_definition}{code/coolingredient_definition.hs}
+
+Istovremeno su i automatski derivirane instance klasa \texttt{ToRecord} i \texttt{FromRecord} koje dolaze iz zbirke \texttt{cassava} za rad sa \acs{csv} datotekama te omogućuju serijalizaciju i deserijalizaciju podataka. Sastrugani podaci o sastojcima spremljeni su u lokalnu datoteku za daljnju obradu.
+
+\section{Konzum}
+
+Sa konzumove internet trgovine potrebno je preuzeti podatke o cijenama i pakiranju sastojaka (pošto ta informacija nije dostupna na Coolinarki). Na sreću, internet trgovina je \acs{spa} aplikacija koja ima nezaštićen \acs{api} tako da je uz malo proučavanja \acs{xhr} zahtjeva lako doći do potrebnih informacija o zahtjevima koje je potrebno poslati kako bi se dobio potreban \acs{json} odgovor.
