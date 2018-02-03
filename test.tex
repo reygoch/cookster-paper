@@ -1,0 +1,28 @@
+% !TEX program = xelatex
+\documentclass[12pt]{report}
+
+\usepackage{acro}
+\usepackage[T1]{fontenc}
+\usepackage[croatian]{babel}
+
+\DeclareAcronym{atm}{
+    short = ATM,
+    long = asinkroni način prijenosa,
+    foreign = Asynchronous Transfer Mode,
+    foreign-lang = english
+}
+\DeclareAcronym{isdn}{
+    short = ISDN,
+    long = digitalna mreža integriranih usluga,
+    foreign = Integrated Services Digital Network,
+    foreign-lang = english
+}
+
+\begin{document}
+
+Blah blah blah \acs{atm}, blah blah blah \acs{isdn}
+
+\printacronyms
+
+
+\end{document}

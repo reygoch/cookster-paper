@@ -1,0 +1,27 @@
+
+\makeatletter
+\begin{titlepage}
+    \let \footnotesize \small
+    \let \footnoterule \relax
+
+    \begin{center}
+        \sffamily
+        {\Large \textbf{\MakeUppercase{\@institution}} \par}
+        \vspace*{\fill}
+        {\Large \MakeUppercase{\@what} \par}
+        \vskip 1em
+        {\huge \textbf{\MakeUppercase{\@title}} \par}
+        \vskip 1em
+        {
+            \Large \lineskip .75em
+            \begin {tabular}
+                [t]{c}\Large{\@author}
+            \end {tabular}
+            \par
+        }
+        \vspace*{\fill}
+        {\Large \@where, \@date \par}
+    \end{center}
+\end{titlepage}
+
+\makeatother

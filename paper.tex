@@ -1,0 +1,134 @@
+% !TEX program = xelatex
+\documentclass[12pt, a4paper, leqno, titlepage]{report} % openright
+\usepackage[left=3.5cm,right=3cm,top=3cm,bottom=3cm]{geometry}
+
+\usepackage{fontspec}
+\usepackage[T1]{fontenc}
+\usepackage[english,croatian]{babel}
+\usepackage{color}
+\usepackage{xpatch}
+
+\usepackage{acro}
+\usepackage{longtable,tabu}
+\usepackage{titlesec}
+
+\usepackage{graphicx}
+\usepackage[titles]{tocloft}
+
+\usepackage{float}
+\usepackage{newfloat}
+
+\usepackage[newfloat=true]{minted}
+\usepackage{tcolorbox}
+
+\usepackage{hyperref}
+\hypersetup{linktoc=all}
+
+\graphicspath{ {paper/img/} }
+
+\setsansfont{Arial}
+\setmonofont{Courier New}
+\setromanfont{Times New Roman}
+
+\setlength{\parskip}{1em}
+\setlength{\parindent}{0em}
+\setlength{\cfttabindent}{0em}
+\setlength{\cftfigindent}{0em}
+
+\setcounter{secnumdepth}{2}
+
+\titleformat
+{\chapter}[hang]{\sffamily\bfseries\fontsize{18}{21}\selectfont}{\thechapter}{10pt}{\sffamily\bfseries\fontsize{18}{21}\selectfont}
+
+\titlespacing*
+{\chapter}{0pt}{-50pt}{20pt}
+
+\titleformat*
+{\section}{\sffamily\bfseries\fontsize{16}{19}\selectfont}
+
+\titleformat*
+{\subsection}{\sffamily\bfseries\fontsize{14}{16}\selectfont}
+
+\include{paper/acronyms}
+
+\ExplSyntaxOn
+\cs_set_protected:Npn \acro_get_foreign:n #1
+  {
+    \prop_if_in:NnT \l__acro_foreign_prop {#1}
+      {
+        % \tl_use:N \l__acro_foreign_sep_tl
+        \prop_get:NnN \l__acro_foreign_prop {#1} \l__acro_foreign_tl
+        \group_begin:
+          \tl_use:N \l__acro_foreign_list_format_tl
+          {
+            \acro_foreign_language:VV
+              \l__acro_foreign_lang_tl
+              \l__acro_foreign_tl
+          }
+        \group_end:
+      }
+  }
+
+\cs_set_protected:Npn \__acro_list_entry_long:n #1
+  {
+    \bool_if:NT \l__acro_foreign_bool
+      { \acro_get_foreign:n {#1} }
+    \tl_use:N \l__acro_foreign_sep_tl
+    \group_begin:
+      \bool_if:NT \l__acro_capitalize_list_bool
+        { \bool_set_true:N \l__acro_first_upper_bool }
+      \acro_write_long:Vf \l__acro_list_long_format_tl
+        {
+          \prop_if_in:NnTF \l__acro_list_prop {#1}
+            { \__acro_get_property:nn {list} {#1} }
+            { \__acro_get_property:nn {long} {#1} }
+        }
+    \group_end:
+    \acro_cite_if:nn { \l__acro_citation_all_bool } {#1}
+  }
+\ExplSyntaxOff
+
+\DeclareAcroListStyle{custom}{table}{
+  table = longtabu,
+  table-spec = @{}lXX@{},
+  foreign-sep = &
+}
+
+\acsetup{
+  list-style=custom,
+  list-long-format=,
+  list-short-format=\bfseries,
+  list-foreign-format=\itshape
+}
+
+% \loadcode{language}{caption}{label}{filepath}
+\newcommand{\loadcode}[4]{
+    \renewcommand\theFancyVerbLine{\normalsize\arabic{FancyVerbLine}}
+    \begin{listing}[H]
+        \begin{tcolorbox}[boxsep=1pt,left=25pt,right=5pt,top=5pt,bottom=5pt,colback=white]
+            \inputminted[fontsize=\small,linenos,breaklines,style=manni]{#1}{#4}
+        \end{tcolorbox}
+        \caption{#2}
+        \label{#3}
+    \end{listing}
+}
+
+\SetupFloatingEnvironment{listing}{name=Kod}
+\SetupFloatingEnvironment{listing}{listname=Popis kodova}
+
+\begin{document}
+    \tableofcontents
+
+    \include{paper/chp/00_Predgovor}
+    \include{paper/chp/00_Sazetak}
+
+    \include{paper/chp/01_Uvod}
+    \include{paper/chp/02_Haskell}
+    \include{paper/chp/03_Podatci}
+
+    \include{paper/chp/xx_PopisKratica}
+    \include{paper/chp/xx_PopisSlika}
+    \include{paper/chp/xx_PopisTablica}
+    \include{paper/chp/xx_PopisKodova}
+    \include{paper/chp/xx_PopisLiterature}
+\end{document}

@@ -1,0 +1,41 @@
+\chapter{Haskell}
+
+Haskell je funkcijski programski jezik sa mnogo značajki kojima ga se može opisati. Neke od najvažnijih značajki su čistoća, referencijalna transparentnost, lijenost, nepromjenjivost podataka i jak tipski sustav.
+
+\section{Čistoća}
+
+Čistoća je svojstvo jezika koje kaže da funkcija \textbf{uvijek} mora vraćati vrijednost te da osim vraćanja te vrijednosti ne smije imati nikakvih sporednih efekata, kao na primjer ispis na ekran, pisanje u bazu podataka ili lansiranje nuklearnih raketa.
+
+Ovo svojstvo je izrazito korisno, pogotovo kod konkurentnog koda gdje postoji mogućnost da koristimo neku funkciju koja vraća određenu vrijednost ali u pozadini mijenja neku varijablu koje mi nismo svjesni što može utjecati na rezultat neke druge funkcije koja također čita i piše u tu istu varijablu.
+
+Koliko god težili korištenju čistih funkcija na kraju je ipak potrebno pisati u bazu podataka ili mijenjati neko stanje. U tu svrhu koriste se monade. One su vrlo elegantno rješenje za ovaj problem te ujedno čuvaju čistoću jezika bez da moramo žrtvovat takve \textit{sporedne} akcije.
+
+Razlika je u tome što monade zahtijevaju da su sve takve sporedne akcije eksplicitne, odnosno da su vidljive iz samog povratnog tipa podatka. Dok u nekom prljavom jeziku možemo imati neku funkciju koja ima tip povratne vrijednosti \texttt{Int} ali ujedno mijenja neku globalnu varijablu \texttt{String x} u Haskellu takva funkcija mora eksplicitno reći da mutira neko stanje, tako da bi u tom slučaju tip povratne vrijednosti bio \texttt{State String Int} gdje \texttt{State} jasno daje do znanja da funkcija utječe na neko \textit{stanje} koje je tipa \texttt{String} te ima povratnu vrijednost tipa \texttt{Int}. Također, prilikom pozivanja takve funkcije moramo predati početno stanje kao jedan od argumenata.
+
+Ovakvim pristupom dali smo puno više korisnih informacija programeru kao i kompajleru koji na osnovu toga mogu donositi puno bolje zaključke o dijelovima koda i njihovom međudjelovanju.
+
+\section{Referencijalna transparentnost}
+
+Referencijalna transparentnost nam govori da čiste funkcije uvijek vraćaju istu vrijednost za iste argumente tako da ukoliko imamo funkcije \texttt{f(a, b) = a + b} i \texttt{g(a, b) = f(a,b) + f(b,a)} možemo slobodno zamijeniti \texttt{f(a,b)} u funkciji \texttt{g} sa \texttt{a + b + a + b} što kompajler može dalje optimizirati i pretvoriti u \texttt{2*a + 2*b}. Dakle, sigurni smo da će ponašanje funkcije ostati isto, samo će se razlikovati u performansama.
+
+\section{Lijenost}
+
+Radi referencijalne transparentnosti, funkcije mogu biti izvršene u bilo kojem trenutku i uvijek dati isti rezultat. Iz tog razloga je moguće odgoditi evaluaciju izraza za kasnije što nam otvara mogućnost rada sa vrlo apstraktnim elementima kao što su beskonačne liste ili \textit{bottom} vrijednosti.
+
+\section{Nepromjenjivost podataka}
+
+U Haskellu ne postoje varijable. Jednom kada smo definirali neku vrijednost ona ostaje zauvijek ne promijenjena. Umjesto mutiranja originalne vrijednosti ili strukture radi se kopija.
+
+\section{Jak tipski sustav}
+
+Haskell ima vrlo jak i izrazit tipski sustav. Postoje razne stvari koje nam omogućava, poput programiranja na razini tipa, automatsko zaključivanje tipova ili čak mogućnost automatske implementacije funkcije prema njenom tipu.
+
+Korisno je pogledati jedan primjer te ga usporediti sa Javom. Usporedbu ćemo provesti na funkciji \texttt{misterij}.
+
+\loadcode{haskell}{Haskell misterij tipski potpis}{haskell_misterij}{paper/cde/misterij_haskell.hs}
+
+\loadcode{java}{Java misterij tipski potpis}{java_misterij}{paper/cde/misterij_java.java}
+
+Ovdje su dani samo tipski potpisi. Ako se zapitamo kako bi mogla izgledati implementacija primijetit ćemo da funkcija vraća isti tip podatka koji i prima. Kada shvatimo da ne znamo ništa tom tipu jedina moguća implementacija je da vratimo istu vrijednost koju smo i primili, dakle \texttt{misterij} je zapravo funkcija identiteta.
+
+Na žalost, iako to logika nalaže, istu stvar ne možemo tvrditi i za moguću implementaciju u Javi. U Javi \texttt{misterij} može vratiti \texttt{null}, saznati klasu i napraviti novu instancu, usporediti pokazivač i sl. Drugim riječima, tipovi u Haskellu \textbf{ne lažu}.

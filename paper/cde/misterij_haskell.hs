@@ -1,0 +1,1 @@
+misterij :: a -> a
