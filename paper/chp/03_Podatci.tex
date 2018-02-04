@@ -1,3 +1,40 @@
 \chapter{Podatci}
 
-U ovom poglavlju biti će obrađene tehnike prikupljanja i obrade podataka korištenih pri izradi aplikacije. Pošto je svrha aplikacije predviđati 
+Kako bi aplikacija ispravno funkcionirala, potrebno je pribaviti neke osnovne podatke s kojima će baratati.
+
+Bila bi idealna situacija kada bi postojao set podataka sa receptima, njihovim sastojcima, prosječnim cijenama sastojaka i dostupnim količinskim pakovanjima te korisnicima i njihovim najdražim receptima. Iz takvog bi se seta podataka moglo puno naučiti o korisničkim sklonostima prema receptima i sastojcima ali isto tako bi se podatci o cijenama i pakiranjima mogli iskoristiti za optimiziranje tjednog jelovnika.
+
+Takav set podataka ipak ne postoji, te ga je potrebno napraviti. Ispada da postoje relativno praktični izvori podataka koji se mogu iskoristiti, a to su Coolinarka (servis za dijeljenje recepata) i Konzum Klik (konzumov servis za kupovinu preko Interneta).
+
+Podatci o korisničkim sklonostima nisu nigdje javno dostupni, no i da jesu trebalo bi ih povezati sa podatcima o sastojcima i receptima koje smo prikupili iz drugih izvora što nije baš idealno te se sa relativno malim setom podataka zapravo svodi na čisto pogađanje.
+
+Pošto je takva situacija i s obzirom da je fokus ovog rada na primjeni algoritama (ne nužno na realnom setu podataka) odabran pristup ovom problemu je da se naprave simulirani korisnici (botovi) koji će imati sklonost prema određenim atributima recepata i na osnovu toga će te recepte spremati u svoju privatnu kuharicu. Time je riješen problem nedostupnosti podataka o korisničkim sklonostima, samo što u ovom slučaju nećemo predviđati sklonosti ljudi već botova što nije veliki problem a ima i svojih prednosti, kao na primjer jednostavnost testiranja uspješnosti algoritma preporuka.
+
+\section{Coolinarka}
+
+Coolinarka sadrži strukturiranu stranicu sa popisom raznih namirnica koje se koriste u receptima. Svaka od namirnica na popisu ima svoju pod stranicu gdje se nalazi kratak opis i velika slika što su zapravo željene informacije.
+
+Kako bi došli do tih podataka u prikladnom formatu potrebno je definirati strugač za coolinarkin \ac{html}. Ideja je prvo dohvatiti stranicu sa popisom sastojaka, sastrugati linkove koji vode na detalje o sastojcima te onda sastrugati detalje pojedinih sastojaka i spremiti ih na disk u praktičnom formatu kao što su \ac{csv}.
+
+U tu svrhu korištena je programska zbirka \texttt{scalpel-core} koja pruža jednostavno monadsko sučelje za definiranje strugača.
+
+\loadcode{haskell}{Coolinarka - Strugač liste sastojaka}{ingredient_urls_scraper}{paper/cde/ingredient_urls_scraper.hs}
+
+Princip je vrlo sličan selektorima koje koriste \acp{css}. U ovom slučaju odabiremo \textit{anchor} tagove koji se nalaze unutar \texttt{h3} taga koji je element liste te izvlačimo \texttt{href} atribut koji sadrži relativni \ac{url} sastojka.
+
+Pošto su \ac{url}-ovi relativni, potrebno je dodati korijensku adresu web stranice kako bi mogli dohvatiti sadržaj tih podstranica što je učinjeno na način da je \texttt{coolinarka} dodana kao prefiks na \ac{url} koji je zatim provućen kroz \texttt{importURL} funkciju koja provjerava valjanost i vraća podatkovni tip \texttt{URL}.
+
+Nakon što su sastrugani \ac{url}-ovi potrebno je sastrugati informacije o sastojcima. Za to je definiran novi strugač koji radi na istom principu.
+
+\loadcode{haskell}{Coolinarka - Strugač informacija o sastojku}{ingredient_scraper}{paper/cde/ingredient_scraper.hs}
+
+Ovdje možemo primijetiti da strugač vraća podatkovni tip \texttt{CoolIngredient} koji je struktura koja predstavlja sastojak uzet sa Coolinarke te ima slijedeću definiciju.
+
+\loadcode{haskell}{Coolinarka - \texttt{CoolIngredient}}{coolingredient_definition}{paper/cde/coolingredient_definition.hs}
+
+Struktura, osim što definira razna polja za podatke vezane uz pojedini sastojak, derivira i nekoliko klasa. \texttt{Eq} klasa omogućuje vršenje provjere jednakosti, \texttt{Show} pruža funkciju za serijalizaciju u \texttt{String} dok \texttt{Generics} daje dodatne mehanizme za automatsku implementaciju instanci klasa koje to podržavaju.
+
+U ovom slučaju iskorišten je \texttt{Generics} kako bi mogli automatski instancirali klase \texttt{ToRecord} i \texttt{FromRecord} koje dolaze iz programske zbirke \texttt{cassava} te omogućuju serijalizaciju podataka u \ac{csv}.
+
+Nakon struganja svih tih informacija podatci su spremljeni na disk u \ac{csv} formatu, uz to slike su spremljene u zasebnu mapu za kasnije korištenje.
+
